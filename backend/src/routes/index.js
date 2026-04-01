@@ -13,6 +13,6 @@ router.use('/orders',     require('./order.routes'));
 router.use('/restock',    require('./restock.routes'));
 router.use('/dashboard',  require('./dashboard.routes'));
 router.use('/logs',       require('./log.routes'));
-
+router.use('/users',      require('./user.routes'));
 
 module.exports = router;

@@ -5,6 +5,7 @@ import { ordersApi }     from '../api/orders.api';
 import { restockApi }    from '../api/restock.api';
 import { dashboardApi }  from '../api/dashboard.api';
 import { logsApi }       from '../api/logs.api';
+import { usersApi }      from '../api/users.api';
 
 
 // --- Categories ---
@@ -185,4 +186,18 @@ export const useLogs = (params = { limit: 10 }) =>
     refetchInterval: 15_000,
   });
 
+// --- Users (Admin Only) ---
+export const useUsers = () =>
+  useQuery({
+    queryKey: ['users'],
+    queryFn:  () => usersApi.getAll().then((r) => r.data.data),
+  });
+
+export const useUpdateUserRole = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, role }) => usersApi.updateRole(id, role),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: ['users'] }),
+  });
+};
 

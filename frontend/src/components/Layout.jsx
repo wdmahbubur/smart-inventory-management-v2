@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { id: 'products',   label: 'Products',     icon: '📦' },
   { id: 'categories', label: 'Categories',   icon: '🏷️' },
   { id: 'restock',    label: 'Restock Queue',icon: '⚠️' },
+  { id: 'users',      label: 'Team Access',  icon: '👥', adminOnly: true },
 ];
 
 function Sidebar({ currentPage, onNavigate, collapsed, onToggle }) {
@@ -33,7 +34,7 @@ function Sidebar({ currentPage, onNavigate, collapsed, onToggle }) {
 
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.filter(item => !item.adminOnly || isAdmin).map((item) => {
           const isActive = currentPage === item.id;
           const badge = item.id === 'restock' && urgentCount > 0 ? urgentCount : null;
           return (
@@ -96,6 +97,7 @@ function TopBar({ currentPage, onNavigate }) {
     products:   'Products',
     categories: 'Categories',
     restock:    'Restock Queue',
+    users:      'User Management',
   };
 
   return (

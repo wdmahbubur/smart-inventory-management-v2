@@ -7,6 +7,7 @@ import Categories from './pages/Categories';
 import Products   from './pages/Products';
 import Orders     from './pages/Orders';
 import RestockQueue from './pages/RestockQueue';
+import Users      from './pages/Users';
 import { Spinner } from './components/ui';
 
 const PAGES = {
@@ -15,6 +16,7 @@ const PAGES = {
   products:   Products,
   categories: Categories,
   restock:    RestockQueue,
+  users:      Users,
 };
 
 export default function App() {

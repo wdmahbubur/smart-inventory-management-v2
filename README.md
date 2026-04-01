@@ -10,6 +10,7 @@ A full-stack web application for managing products, orders, stock levels, and a 
 
 ### 📊 Dashboard
 - Real-time KPIs: orders today, daily revenue, pending orders, and low-stock alerts
+- Sales by Category Pie Chart for precise revenue distribution insights
 - Recent activity feed with live status indicators
 - Low-stock product table with severity-based colour coding
 
@@ -34,6 +35,7 @@ A full-stack web application for managing products, orders, stock levels, and a 
 ### 🔐 Authentication & Access Control
 - JWT-based auth (7-day expiry)
 - Role system: `admin` and `manager`
+- Admin Dashboard "Team Access" page for securely managing staff user roles
 - Protected routes — all API endpoints require a valid token
 - Activity log tracks every meaningful action (order created, stock updated, restock queued, etc.)
 
@@ -228,6 +230,12 @@ Authorization: Bearer <jwt_token>
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/dashboard` | KPIs, low-stock list, recent activity |
+
+### Users (Admin Only)
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/users` | List all system users and their roles |
+| `PUT` | `/api/users/:id/role` | Update user role (admin/manager) |
 
 ### Categories & Logs
 | Method | Endpoint | Description |
