@@ -15,21 +15,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'        
-        
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+          cache: 'npm'        
 
       - name: Install Backend Dependencies
-        run: cd backend && pnpm install
+        run: cd backend && npm install
 
       - name: Install Frontend Dependencies
-        run: cd frontend && pnpm install
+        run: cd frontend && npm install
 
       - name: Build Frontend
-        run: cd frontend && pnpm build
+        run: cd frontend && npm run build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
