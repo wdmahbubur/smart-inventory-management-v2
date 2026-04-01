@@ -293,11 +293,11 @@ const OrderDetail = ({ order, onClose, onStatusUpdate }) => {
                   key={s}
                   onClick={() => handleStatus(s)}
                   disabled={updateMutation.isPending}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors
+                  className={`text-sm px-4 py-2 rounded-xl font-semibold shadow-sm transition-colors
                     ${s === 'cancelled'
-                      ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                      : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}
-                    disabled:opacity-50`}
+                      ? 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'}
+                    disabled:opacity-70 disabled:cursor-not-allowed`}
                 >
                   {updateMutation.isPending ? <Spinner size="sm" /> : `Mark as ${tCfg?.label || s}`}
                 </button>

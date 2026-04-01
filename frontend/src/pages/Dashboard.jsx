@@ -1,6 +1,7 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
+  PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { useDashboard } from '../hooks/index';
 import ActivityFeed from '../components/ActivityFeed';
@@ -69,6 +70,79 @@ const OrdersChart = ({ data }) => {
   );
 }
 
+// Pie-chart palette
+const PIE_COLORS = [
+  '#6366f1', '#10b981', '#f59e0b', '#ef4444',
+  '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6',
+  '#f97316', '#84cc16',
+];
+
+// Category Sales Pie Chart
+const CategorySalesPieChart = ({ data }) => {
+  if (!data?.length) return (
+    <div className="flex items-center justify-center h-52 text-gray-400 text-sm">
+      No sales data yet.
+    </div>
+  );
+
+  const totalRevenue = data.reduce((sum, d) => sum + d.revenue, 0);
+
+  const enriched = data.map((d) => ({
+    ...d,
+    percent: totalRevenue > 0 ? ((d.revenue / totalRevenue) * 100).toFixed(1) : '0.0',
+  }));
+
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, index }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    const pct = enriched[index]?.percent;
+    if (parseFloat(pct) < 5) return null; // skip tiny slices
+    return (
+      <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central"
+        fontSize={11} fontWeight={700}>
+        {pct}%
+      </text>
+    );
+  };
+
+  return (
+    <ResponsiveContainer width="100%" height={240}>
+      <PieChart>
+        <Pie
+          data={enriched}
+          dataKey="revenue"
+          nameKey="category"
+          cx="50%"
+          cy="50%"
+          outerRadius={90}
+          labelLine={false}
+          label={renderCustomLabel}
+        >
+          {enriched.map((_, i) => (
+            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip
+          formatter={(val, name) => [
+            `$${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            name,
+          ]}
+          contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 }}
+        />
+        <Legend
+          formatter={(value, entry) => (
+            <span style={{ fontSize: 12, color: '#374151' }}>
+              {value} ({enriched.find(d => d.category === value)?.percent}%)
+            </span>
+          )}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+};
+
 // Main Dashboard
 export default function Dashboard({ onNavigate }) {
   const { data: summary, isLoading } = useDashboard();
@@ -92,14 +166,7 @@ export default function Dashboard({ onNavigate }) {
           icon="🛒"
           colorClass="bg-indigo-50 text-indigo-700"
           sub={`${summary.pending_orders} pending`}
-        />
-        <StatCard
-          label="Revenue Today"
-          value={formatCurrency(summary.revenue_today)}
-          icon="💰"
-          colorClass="bg-green-50 text-green-700"
-          sub="Confirmed + shipped"
-        />
+        />        
         <StatCard
           label="Pending Orders"
           value={summary.pending_orders}
@@ -107,11 +174,18 @@ export default function Dashboard({ onNavigate }) {
           colorClass="bg-yellow-50 text-yellow-700"
         />
         <StatCard
-          label="Low Stock"
-          value={summary.low_stock_count}
-          icon="⚠️"
-          colorClass="bg-red-50 text-red-700"
-          sub="Items need restocking"
+          label="Completed Orders"
+          value={summary.completed_orders}
+          icon="✅"
+          colorClass="bg-teal-50 text-teal-700"
+          sub="Delivered"
+        />
+        <StatCard
+          label="Revenue Today"
+          value={formatCurrency(summary.revenue_today)}
+          icon="💰"
+          colorClass="bg-green-50 text-green-700"
+          sub="Confirmed + shipped"
         />
       </div>
 
@@ -125,36 +199,63 @@ export default function Dashboard({ onNavigate }) {
           sub={`${summary.out_of_stock_products} out of stock`}
         />
         <StatCard
-          label="Completed Orders"
-          value={summary.completed_orders}
-          icon="✅"
-          colorClass="bg-teal-50 text-teal-700"
-          sub="Delivered"
-        />
-        <StatCard
           label="Active Products"
           value={summary.active_products}
           icon="🟢"
           colorClass="bg-gray-50 text-gray-700"
         />
+        <StatCard
+          label="Low Stock"
+          value={summary.low_stock_count}
+          icon="⚠️"
+          colorClass="bg-red-50 text-red-700"
+          sub="Items need restocking"
+        />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="card p-5">
+      {/* Row 1: Revenue chart (2/3) + Category pie chart (1/3) */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2 card p-5">
           <h2 className="text-sm font-semibold text-gray-800 mb-4">Revenue — Last 7 Days</h2>
           <RevenueChart data={summary.revenue_chart} />
         </div>
-        <div className="card p-5">
-          <h2 className="text-sm font-semibold text-gray-800 mb-4">Orders — Last 7 Days</h2>
-          <OrdersChart data={summary.revenue_chart} />
+        <div className="card p-5 flex flex-col">
+          <h2 className="text-sm font-semibold text-gray-800 mb-2">Sales by Category</h2>
+          <div className="flex-1">
+            <CategorySalesPieChart data={summary.category_sales} />
+          </div>
         </div>
       </div>
 
-      {/* Bottom Row */}
+      {/* Row 2: Orders chart (2/3) + Orders by Status (1/3) */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2 card p-5">
+          <h2 className="text-sm font-semibold text-gray-800 mb-4">Orders — Last 7 Days</h2>
+          <OrdersChart data={summary.revenue_chart} />
+        </div>
+        <div className="card p-5">
+          <h2 className="text-sm font-semibold text-gray-800 mb-4">Orders by Status</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {Object.entries(summary.orders_by_status).map(([status, counts]) => {
+              const cfg = ORDER_STATUS_CONFIG[status];
+              return (
+                <div
+                  key={status}
+                  onClick={() => onNavigate('orders')}
+                  className="flex flex-col items-center bg-gray-50 rounded-xl px-3 py-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                >
+                  <span className="text-xl font-bold text-gray-800">{counts.total}</span>
+                  <Badge label={cfg?.label || status} colorClass={cfg?.color || 'bg-gray-100 text-gray-600'} />
+                  <span className="text-xs text-indigo-500 mt-1">+{counts.today} today</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
-        {/* Low Stock Products */}
+      {/* Row 3: Low Stock table (2/3) + Activity Feed (1/3) */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-800">Low Stock Products</h2>
@@ -206,7 +307,6 @@ export default function Dashboard({ onNavigate }) {
           )}
         </div>
 
-        {/* Activity Feed */}
         <div className="card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-800">Recent Activity</h2>
@@ -216,28 +316,7 @@ export default function Dashboard({ onNavigate }) {
         </div>
       </div>
 
-      {/* Orders by Status */}
-      <div className="card p-5">
-        <h2 className="text-sm font-semibold text-gray-800 mb-4">Orders by Status</h2>
-        <div className="flex flex-wrap gap-4">
-          {Object.entries(summary.orders_by_status).map(([status, counts]) => {
-            const cfg = ORDER_STATUS_CONFIG[status];
-            return (
-              <div
-                key={status}
-                onClick={() => onNavigate('orders')}
-                className="flex flex-col items-center bg-gray-50 rounded-xl px-6 py-4 cursor-pointer hover:bg-gray-100 transition-colors"
-              >
-                <span className="text-2xl font-bold text-gray-800">{counts.total}</span>
-                <Badge label={cfg?.label || status} colorClass={cfg?.color || 'bg-gray-100 text-gray-600'} />
-                <span className="text-xs text-indigo-500 mt-1">+{counts.today} today</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Recent Orders */}
+      {/* Row 4: Recent Orders (full width) */}
       {summary.recent_orders?.length > 0 && (
         <div className="card p-5">
           <div className="flex items-center justify-between mb-4">

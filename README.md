@@ -2,6 +2,8 @@
 
 A full-stack web application for managing products, orders, stock levels, and a restock queue.
 
+### 🔗 Live Link: https://inventory-management-eap.vercel.app
+
 ---
 
 ## ✨ Features
@@ -127,7 +129,7 @@ Create a `.env` file in the `backend/` directory:
 # Server
 PORT=5000
 NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:3000
 
 # Database
 DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<db>
@@ -170,7 +172,7 @@ pnpm install
 pnpm dev
 ```
 
-The app will be available at **http://localhost:5173**.
+The app will be available at **http://localhost:3000**.
 
 > The Vite dev server proxies `/api/*` requests to `http://localhost:5000` automatically.
 

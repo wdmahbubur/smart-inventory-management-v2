@@ -14,6 +14,7 @@ const getSummary = async (req, res) => {
     totalProductsResult,
     revenueChartResult,
     recentOrdersResult,
+    categorySalesResult,
   ] = await Promise.all([
 
     // Orders today
@@ -102,6 +103,20 @@ const getSummary = async (req, res) => {
       ORDER BY o.created_at DESC
       LIMIT 5
     `),
+
+    // Revenue by category (all-time, non-cancelled/pending)
+    pool.query(`
+      SELECT
+        COALESCE(c.name, 'Uncategorised') AS category,
+        COALESCE(SUM(oi.price_at_order * oi.quantity), 0) AS revenue
+      FROM order_items oi
+      JOIN orders o   ON oi.order_id  = o.id
+      JOIN products p ON oi.product_id = p.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE o.status NOT IN ('pending', 'cancelled')
+      GROUP BY COALESCE(c.name, 'Uncategorised')
+      ORDER BY revenue DESC
+    `),
   ]);
 
   // Shape status counts into a flat object
@@ -116,21 +131,25 @@ const getSummary = async (req, res) => {
   const productStats = totalProductsResult.rows[0];
 
   const summary = {
-    orders_today:     parseInt(ordersTodayResult.rows[0].count),
-    revenue_today:    parseFloat(revenueTodayResult.rows[0].revenue),
-    total_products:   parseInt(productStats.total),
-    active_products:  parseInt(productStats.active),
+    orders_today: parseInt(ordersTodayResult.rows[0].count),
+    revenue_today: parseFloat(revenueTodayResult.rows[0].revenue),
+    total_products: parseInt(productStats.total),
+    active_products: parseInt(productStats.active),
     out_of_stock_products: parseInt(productStats.out_of_stock),
-    low_stock_count:  lowStockResult.rows.length,
-    pending_orders:   statusMap.pending?.total || 0,
+    low_stock_count: lowStockResult.rows.length,
+    pending_orders: statusMap.pending?.total || 0,
     completed_orders: statusMap.delivered?.total || 0,
     orders_by_status: statusMap,
-    low_stock_items:  lowStockResult.rows,
-    recent_orders:    recentOrdersResult.rows,
-    revenue_chart:    revenueChartResult.rows.map((r) => ({
-      day:         r.day,
-      revenue:     parseFloat(r.revenue),
+    low_stock_items: lowStockResult.rows,
+    recent_orders: recentOrdersResult.rows,
+    revenue_chart: revenueChartResult.rows.map((r) => ({
+      day: r.day,
+      revenue: parseFloat(r.revenue),
       order_count: parseInt(r.order_count),
+    })),
+    category_sales: categorySalesResult.rows.map((r) => ({
+      category: r.category,
+      revenue: parseFloat(r.revenue),
     })),
   };
 
