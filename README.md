@@ -108,8 +108,8 @@ Elite Pool Task/
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
-cd "Elite Pool Task"
+git clone https://github.com/wdmahbubur/smart-inventory-management-v2.git
+cd "smart-inventory-management-v2"
 ```
 
 ---
@@ -270,10 +270,28 @@ activity_logs
 
 ---
 
-## 🧩 Key Design Decisions
 
-- **Atomic transactions** — order creation and stock deduction happen inside a single `withTransaction` wrapper; any failure rolls back everything
-- **Row-level locking** — `SELECT … FOR UPDATE` on product rows prevents overselling under concurrent requests
-- **Enum-safe queries** — all PostgreSQL enum columns use explicit `::enum_type` casts in UPDATE statements
-- **Automatic restock queuing** — stock deduction triggers a queue upsert with dynamic priority; no manual intervention needed
-- **Immutable price history** — `price_at_order` is stored on each order item, so repricing a product never corrupts historical order totals
+---
+
+## 🚀 Deployment (Vercel + GitHub Actions)
+
+The project is configured for **Automated Deployment** to Vercel via GitHub Actions.
+
+### 1. Vercel Configuration
+1.  **Create a New Project** on Vercel and link your GitHub repository.
+2.  **Environment Variables**: Add the following to your **Vercel Project Dashboard** (`Settings > Environment Variables`):
+    -   `DATABASE_URL`: Your PostgreSQL connection string.
+    -   `JWT_SECRET`: A secure key for auth.
+    -   `NODE_ENV`: `production`
+    -   `FRONTEND_URL`: Your Vercel production URL (e.g., `https://my-app.vercel.app`).
+
+### 2. GitHub Secrets
+In your GitHub repository, navigate to `Settings > Secrets and variables > Actions` and add:
+-   `VERCEL_TOKEN`: Vercel Personal Access Token ([get one here](https://vercel.com/account/tokens)).
+-   `VERCEL_ORG_ID`: Your Vercel Team/User ID.
+-   `VERCEL_PROJECT_ID`: The Project ID found in your Vercel Project Settings.
+
+### 3. Build & Deploy
+Once these secrets are added, every push to the `master` branch will trigger a production deployment automatically.
+
+---
