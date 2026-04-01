@@ -11,20 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'npm'        
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: |
+            backend/pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
 
       - name: Install Backend Dependencies
-        run: cd backend && npm install
+        run: cd backend && pnpm install
 
       - name: Install Frontend Dependencies
-        run: cd frontend && npm install
+        run: cd frontend && pnpm install
 
       - name: Build Frontend
-        run: cd frontend && npm run build
+        run: cd frontend && pnpm build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
