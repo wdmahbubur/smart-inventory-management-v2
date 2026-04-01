@@ -114,12 +114,13 @@ cd "smart-inventory-management-v2"
 
 ---
 
-### 2. Backend setup
+### 2. Unified Setup (Recommended)
 
 ```bash
-cd backend
 pnpm install
 ```
+
+This single command installs dependencies for both the **backend** and the **frontend**.
 
 Create a `.env` file in the `backend/` directory:
 
@@ -127,7 +128,7 @@ Create a `.env` file in the `backend/` directory:
 # Server
 PORT=5000
 NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:3000
 
 # Database
 DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<db>
@@ -152,27 +153,22 @@ Seed the database with demo users and products:
 pnpm seed
 ```
 
-Start the development server:
+Start the development servers for both layers using:
 
 ```bash
-pnpm dev
+pnpm dev:backend   # API at http://localhost:5000
+pnpm dev:frontend  # App at http://localhost:3000
 ```
 
-The API will be available at **http://localhost:5000**.
+### 3. Commands Reference
 
----
-
-### 3. Frontend setup
-
-```bash
-cd ../frontend
-pnpm install
-pnpm dev
-```
-
-The app will be available at **http://localhost:5173**.
-
-> The Vite dev server proxies `/api/*` requests to `http://localhost:5000` automatically.
+| Command | Description |
+|---|---|
+| `pnpm install` | Install all dependencies |
+| `pnpm migrate` | Run database migrations |
+| `pnpm seed` | Seed demo data |
+| `pnpm dev:backend` | Start backend dev server |
+| `pnpm dev:frontend` | Start frontend dev server |
 
 ---
 

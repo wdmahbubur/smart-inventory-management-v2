@@ -21,18 +21,12 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-          cache-dependency-path: |
-            backend/pnpm-lock.yaml
-            frontend/pnpm-lock.yaml
 
-      - name: Install Backend Dependencies
-        run: cd backend && pnpm install
-
-      - name: Install Frontend Dependencies
-        run: cd frontend && pnpm install
+      - name: Install Dependencies
+        run: pnpm install
 
       - name: Build Frontend
-        run: cd frontend && pnpm build
+        run: pnpm --filter inventory-frontend run build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
