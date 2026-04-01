@@ -1,0 +1,29 @@
+{
+  "name": "smart-inventory-management",
+  "version": "1.0.0",
+  "description": "Smart Inventory & Order Management System",
+  "private": true,
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "dev:backend":  "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "migrate":      "cd backend && npm run migrate",
+    "seed":         "cd backend && npm run seed"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk":    "^0.24.0",
+    "bcryptjs":             "^2.4.3",
+    "cors":                 "^2.8.5",
+    "dotenv":               "^16.4.5",
+    "express":              "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "express-rate-limit":   "^7.3.1",
+    "helmet":               "^7.1.0",
+    "jsonwebtoken":         "^9.0.2",
+    "morgan":               "^1.10.0",
+    "pg":                   "^8.12.0",
+    "zod":                  "^3.23.8"
+  }
+}

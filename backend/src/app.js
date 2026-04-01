@@ -1,10 +1,10 @@
 require('express-async-errors'); // Must be first — patches all unhandled async errors
 
-const express        = require('express');
-const cors           = require('cors');
-const helmet         = require('helmet');
-const morgan         = require('morgan');
-const routes         = require('./routes/index');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const routes = require('./routes/index');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -13,10 +13,27 @@ const app = express();
 app.use(helmet());
 
 // CORS
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(cors({
-  origin:      process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (Postman, curl, Vercel serverless-to-serverless)
+    if (!origin) return callback(null, true);
+    // Allow any *.vercel.app subdomain automatically
+    if (
+      ALLOWED_ORIGINS.includes(origin) ||
+      /^https:\/\/[\w-]+\.vercel\.app$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+    callback(new Error(`CORS: origin ${origin} not allowed.`));
+  },
   credentials: true,
-  methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
@@ -32,9 +49,9 @@ app.use(express.urlencoded({ extended: true }));
 // Health check
 app.get('/health', (req, res) => {
   res.json({
-    status:    'ok',
+    status: 'ok',
     timestamp: new Date().toISOString(),
-    env:       process.env.NODE_ENV,
+    env: process.env.NODE_ENV,
   });
 });
 
@@ -45,7 +62,7 @@ app.use('/api', routes);
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    error:   `Route not found: ${req.method} ${req.originalUrl}`,
+    error: `Route not found: ${req.method} ${req.originalUrl}`,
   });
 });
 
