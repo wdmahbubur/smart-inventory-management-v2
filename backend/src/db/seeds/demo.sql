@@ -1,5 +1,5 @@
 -- Demo seed data for development
--- Default password: demo1234
+-- Default password: Test@1234
 
 -- Demo Admin User
 INSERT INTO users (id, name, email, password_hash, role)
@@ -7,7 +7,7 @@ VALUES (
   'aaaaaaaa-0000-0000-0000-000000000001',
   'Admin User',
   'admin@demo.com',
-  '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpwBAM6LWGD4ey',
+  '$2a$12$wg6Q2yVAFXQ7ltEI7E1AxOwzV/zlGsvg5fbic47T1WFgZsSk1rpDG',
   'admin'
 ) ON CONFLICT (id) DO NOTHING;
 
@@ -17,7 +17,7 @@ VALUES (
   'aaaaaaaa-0000-0000-0000-000000000002',
   'Manager User',
   'manager@demo.com',
-  '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpwBAM6LWGD4ey',
+  '$2a$12$wg6Q2yVAFXQ7ltEI7E1AxOwzV/zlGsvg5fbic47T1WFgZsSk1rpDG',
   'manager'
 ) ON CONFLICT (id) DO NOTHING;
 
