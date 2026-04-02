@@ -63,7 +63,7 @@ const ProductForm = ({ initial, onSave, onCancel, loading }) => {
         </select>
       </FormField>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField label="Price ($)" required error={errors.price}>
           <input type="number" step="0.01" min="0" value={form.price} onChange={set('price')} placeholder="0.00" className="input" />
         </FormField>
@@ -160,12 +160,12 @@ export default function Products() {
   return (
     <div className="p-6 space-y-4 max-w-screen-xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="page-header">Products</h1>
           <p className="text-sm text-gray-400 mt-0.5">{meta.total ?? 0} products</p>
         </div>
-        <button onClick={() => setShowAdd(true)} className="btn-primary flex items-center gap-2">
+        <button onClick={() => setShowAdd(true)} className="btn-primary flex items-center gap-2 self-start sm:self-auto">
           <span>+</span> Add Product
         </button>
       </div>

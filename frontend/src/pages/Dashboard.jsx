@@ -159,7 +159,7 @@ export default function Dashboard({ onNavigate }) {
     <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           label="Orders Today"
           value={summary.orders_today}
@@ -190,7 +190,7 @@ export default function Dashboard({ onNavigate }) {
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           label="Total Products"
           value={summary.total_products}

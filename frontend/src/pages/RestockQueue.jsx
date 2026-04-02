@@ -27,7 +27,7 @@ const RestockModal = ({ item, onSave, onClose, loading }) => {
       <div className="bg-gray-50 rounded-xl p-4 space-y-1">
         <p className="font-semibold text-gray-900">{item.product_name}</p>
         <p className="text-sm text-gray-500">{item.category_name || 'Uncategorized'}</p>
-        <div className="flex gap-4 mt-2 text-sm">
+        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-sm">
           <span className="text-gray-500">Current: <strong className="text-red-600">{item.current_stock}</strong></span>
           <span className="text-gray-500">Threshold: <strong>{item.min_threshold}</strong></span>
           <span className="text-gray-500">Price: <strong>{formatCurrency(item.price)}</strong></span>
@@ -94,13 +94,12 @@ export default function RestockQueue() {
 
   return (
     <div className="p-6 space-y-5 max-w-screen-xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="page-header">Restock Queue</h1>
           <p className="text-sm text-gray-400 mt-0.5">{items?.length || 0} items need attention</p>
         </div>
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
           {highCount > 0 && (
             <span className="bg-red-100 text-red-700 font-medium px-2.5 py-1 rounded-full">
               {highCount} High

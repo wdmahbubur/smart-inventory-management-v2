@@ -50,12 +50,12 @@ export default function Categories() {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="page-header">Categories</h1>
           <p className="text-sm text-gray-400 mt-0.5">{categories?.length || 0} categories</p>
         </div>
-        <button onClick={() => setShowAdd(true)} className="btn-primary flex items-center gap-2">
+        <button onClick={() => setShowAdd(true)} className="btn-primary flex items-center gap-2 self-start sm:self-auto">
           <span>+</span> Add Category
         </button>
       </div>
@@ -63,7 +63,7 @@ export default function Categories() {
       {apiErr && <Alert type="error" message={apiErr} onClose={() => setApiErr('')} />}
 
       {/* Table */}
-      <div className="card overflow-hidden">
+      <div className="card overflow-x-auto overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16"><Spinner size="lg" /></div>
         ) : !categories?.length ? (
@@ -77,11 +77,11 @@ export default function Categories() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="table-th">Name</th>
-                <th className="table-th">Products</th>
-                <th className="table-th">Created</th>
-                <th className="table-th">Created By</th>
-                {isAdmin && <th className="table-th text-right">Actions</th>}
+                <th className="table-th whitespace-nowrap">Name</th>
+                <th className="table-th whitespace-nowrap">Products</th>
+                <th className="table-th whitespace-nowrap">Created</th>
+                <th className="table-th whitespace-nowrap">Created By</th>
+                {isAdmin && <th className="table-th text-right whitespace-nowrap">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -89,7 +89,7 @@ export default function Categories() {
                 <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
                   <td className="table-td font-medium text-gray-900">{cat.name}</td>
                   <td className="table-td">
-                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap">
                       {cat.product_count} products
                     </span>
                   </td>

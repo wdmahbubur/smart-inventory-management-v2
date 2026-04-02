@@ -19,7 +19,7 @@ const LineItem = ({ item, products, onChange, onRemove, existingProductIds }) =>
   const selected = products.find((p) => p.id === item.product_id);
 
   return (
-    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+    <div className="flex flex-col sm:flex-row sm:items-center items-start gap-3 p-3 bg-gray-50 rounded-xl">
       {/* Product select */}
       <div className="flex-1">
         <select
@@ -144,7 +144,7 @@ const OrderForm = ({ onSave, onCancel, loading }) => {
           <label className="text-sm font-medium text-gray-700">
             Order Items <span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-3 text-xs text-gray-400 w-64">
+          <div className="hidden sm:grid grid-cols-3 gap-3 text-xs text-gray-400 w-64">
             <span className="col-span-1 text-right">Qty</span>
             <span className="col-span-1 text-right">Total</span>
             <span />
@@ -233,24 +233,26 @@ const OrderDetail = ({ order, onClose, onStatusUpdate }) => {
       {err && <Alert type="error" message={err} onClose={() => setErr('')} />}
 
       {/* Header info */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <p className="font-mono text-sm font-bold text-indigo-600">{order.order_number}</p>
           <p className="text-base font-semibold text-gray-900 mt-0.5">{order.customer_name}</p>
           <p className="text-xs text-gray-400">{formatDateTime(order.created_at)}</p>
         </div>
-        <Badge label={cfg?.label || order.status} colorClass={cfg?.color || ''} />
+        <div className="self-start sm:self-auto">
+          <Badge label={cfg?.label || order.status} colorClass={cfg?.color || ''} />
+        </div>
       </div>
 
       {/* Items table */}
-      <div className="border border-gray-100 rounded-xl overflow-hidden">
+      <div className="border border-gray-100 rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50">
             <tr>
-              <th className="table-th">Product</th>
-              <th className="table-th text-center">Qty</th>
-              <th className="table-th text-right">Unit Price</th>
-              <th className="table-th text-right">Line Total</th>
+              <th className="table-th whitespace-nowrap">Product</th>
+              <th className="table-th text-center whitespace-nowrap">Qty</th>
+              <th className="table-th text-right whitespace-nowrap">Unit Price</th>
+              <th className="table-th text-right whitespace-nowrap">Line Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -345,12 +347,12 @@ export default function Orders() {
   return (
     <div className="p-6 space-y-4 max-w-screen-xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="page-header">Orders</h1>
           <p className="text-sm text-gray-400 mt-0.5">{meta.total ?? 0} orders</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="btn-primary flex items-center gap-2">
+        <button onClick={() => setShowCreate(true)} className="btn-primary flex items-center gap-2 self-start sm:self-auto">
           <span>+</span> New Order
         </button>
       </div>
@@ -377,22 +379,26 @@ export default function Orders() {
         </select>
 
         {/* Date range */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400 shrink-0">From</span>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="input w-36 text-sm"
-          />
-          <span className="text-xs text-gray-400 shrink-0">To</span>
-          <input
-            type="date"
-            value={dateTo}
-            min={dateFrom || undefined}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="input w-36 text-sm"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className='flex items-center gap-2'>
+            <span className="text-xs text-gray-400 shrink-0">From</span>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="input w-36 text-sm"
+            />
+          </div>
+          <div className='flex items-center gap-2'>
+            <span className="text-xs text-gray-400 shrink-0">To</span>
+            <input
+              type="date"
+              value={dateTo}
+              min={dateFrom || undefined}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="input w-36 text-sm"
+            />
+          </div>
         </div>
 
         {(search || statusFilter || dateFrom || dateTo) && (
