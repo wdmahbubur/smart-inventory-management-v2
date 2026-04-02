@@ -9,7 +9,7 @@ const getSummary = async (req, res) => {
   const [
     ordersTodayResult,
     ordersByStatusResult,
-    lowStockResult,
+    productSummaryResult,
     revenueTodayResult,
     totalProductsResult,
     revenueChartResult,
@@ -35,26 +35,20 @@ const getSummary = async (req, res) => {
        GROUP BY status`,
       [todayStart.toISOString()]
     ),
-
-    // Low stock items
+    // Product Summary (Shows low stock and OK items)
     pool.query(`
-      SELECT
-        p.id,
-        p.name,
-        p.stock,
-        p.min_threshold,
-        p.status,
-        c.name AS category_name,
-        CASE
+      SELECT 
+        p.id, p.name, p.stock, p.min_threshold, p.status, 
+        c.name as category_name,
+        CASE 
           WHEN p.stock = 0 THEN 'Out of Stock'
-          WHEN p.min_threshold > 0 AND (p.stock::DECIMAL / p.min_threshold) <= 0.3 THEN 'Low Stock'
-          ELSE 'Medium'
-        END AS stock_level
+          WHEN p.stock <= p.min_threshold THEN 'Low Stock'
+          ELSE 'OK'
+        END as stock_level
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.stock <= p.min_threshold
       ORDER BY p.stock ASC
-      LIMIT 10
+      LIMIT 8
     `),
 
     // Daily revenue
@@ -71,7 +65,8 @@ const getSummary = async (req, res) => {
       SELECT
         COUNT(*)                                         AS total,
         COUNT(*) FILTER (WHERE status = 'active')        AS active,
-        COUNT(*) FILTER (WHERE status = 'out_of_stock')  AS out_of_stock
+        COUNT(*) FILTER (WHERE status = 'out_of_stock')  AS out_of_stock,
+        COUNT(*) FILTER (WHERE stock <= min_threshold AND stock > 0) AS low_stock
       FROM products
     `),
 
@@ -136,11 +131,11 @@ const getSummary = async (req, res) => {
     total_products: parseInt(productStats.total),
     active_products: parseInt(productStats.active),
     out_of_stock_products: parseInt(productStats.out_of_stock),
-    low_stock_count: lowStockResult.rows.length,
+    low_stock_count: parseInt(productStats.low_stock),
     pending_orders: statusMap.pending?.total || 0,
     completed_orders: statusMap.delivered?.total || 0,
     orders_by_status: statusMap,
-    low_stock_items: lowStockResult.rows,
+    product_summary: productSummaryResult.rows,
     recent_orders: recentOrdersResult.rows,
     revenue_chart: revenueChartResult.rows.map((r) => ({
       day: r.day,

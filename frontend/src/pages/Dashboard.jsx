@@ -258,7 +258,7 @@ export default function Dashboard({ onNavigate }) {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 card p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-800">Low Stock Products</h2>
+            <h2 className="text-sm font-semibold text-gray-800">Product Summary</h2>
             <button
               onClick={() => onNavigate('restock')}
               className="text-xs text-indigo-600 font-medium hover:underline"
@@ -266,7 +266,7 @@ export default function Dashboard({ onNavigate }) {
               View Queue →
             </button>
           </div>
-          {summary.low_stock_items.length === 0 ? (
+          {summary.product_summary.length === 0 ? (
             <p className="text-sm text-gray-400 py-4 text-center">✅ All products are well-stocked.</p>
           ) : (
             <div className="overflow-x-auto">
@@ -281,7 +281,7 @@ export default function Dashboard({ onNavigate }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {summary.low_stock_items.map((item) => (
+                  {summary.product_summary.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="table-td pl-0 font-medium text-gray-900">{item.name}</td>
                       <td className="table-td text-gray-500">{item.category_name || '—'}</td>
@@ -294,9 +294,13 @@ export default function Dashboard({ onNavigate }) {
                       <td className="table-td">
                         <Badge
                           label={item.stock_level.replace('_', ' ')}
-                          colorClass={item.stock_level === 'Out of Stock' || item.stock_level === 'Low Stock'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-yellow-100 text-yellow-700'}
+                          colorClass={
+                            item.stock_level === 'Out of Stock'
+                              ? 'bg-red-100 text-red-700'
+                              : item.stock_level === 'Low Stock'
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-green-100 text-green-700'
+                          }
                         />
                       </td>
                     </tr>
